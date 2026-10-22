@@ -312,6 +312,14 @@ void Sequence::printCompress(gzFile file, bool print_quals) {
 	}
 }
 
+string Sequence::getSequence() {
+  string s = "";
+	for (uint32_t i = 0; i < _length; ++i) {
+		s += decode[code[_bases[i]]];
+	}
+  return s;
+}
+
 void Sequence::printUncompress(FILE *file, bool print_quals) {
 	//print the sequence name
 	/*if (_quals) {

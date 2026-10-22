@@ -61,6 +61,7 @@ struct Sequence
 
 	void clear();
 	void printCompress(gzFile file, bool print_quals);
+	string getSequence();
 	void printUncompress(FILE * file, bool print_quals);
 
 	/*member variables*/
