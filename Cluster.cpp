@@ -29,8 +29,10 @@ void Cluster::removeDup(){
 	size_t numSeqs = _seqs.size();
 	uint8_t *distTable = new uint8_t[numSeqs];
 	uint8_t iterMis;
-	// Keep track of the current cluster ID
-	size_t currentClusterId = 1;
+
+	// Keep track of the next cluster ID we will assign
+	size_t nextClusterID= 1;
+
 
 	Sequence *firstSeq = _seqs[0];
 	// The first sequence gets cluster ID 1
@@ -44,7 +46,7 @@ void Cluster::removeDup(){
 		if(iterMis <= _missMatch){
 			if(_equal(firstSeq, _seqs[i])){
 				// Any sequences equal to the first seq also get cluster ID 1
-				_seqs[i]->_clusterID = 1
+				_seqs[i]->_clusterID = 1;
 				if(firstSeq->getAvgQual() >= _seqs[i]->getAvgQual()){
 					_seqs[i]->_duplicate = true;
 				} else {
@@ -54,19 +56,23 @@ void Cluster::removeDup(){
 		}
 	}
 
-	currentClusterId+=1;
+	nextClusterID++;
 
 	Sequence *it1, *it2;
 	uint8_t diff;
 
 	for(size_t i=1; i<numSeqs-1; i++){
 		it1 = _seqs[i];
-		// Note that it1 can NOT be a duplicate, but can still be in a cluster.
-		// This is because the duplicate flag depends on the quality of the read:
-		// only the lowest quality read in a comparison is marked as a duplicate.
+		// We only continue if the current read(it1) is not a duplicate
 		if(!it1->_duplicate){
+			// If the current read has no cluster id, assign the next ID
+			if (!it1->_clusterID) {
+				it1->_clusterID = nextClusterID;
+				nextClusterID++;
+			}
 			for(size_t j=i+1; j<numSeqs; j++){
 				it2 = _seqs[j];
+				// Then for each following read (it2) that is not a duplicate
 				if(!it2->_duplicate){
 					if(_onlyOptical && (it2->getOpticalCoord(true) - it1->getOpticalCoord(true) > _maxOpticalDist)){
 						break;
@@ -75,7 +81,8 @@ void Cluster::removeDup(){
 					diff = abs(distTable[i]-distTable[j]);
 					if(diff<=_missMatch){
 						if(_equal(it1, it2)){
-						// If it1 and it2 are equal, they should be in the same cluster
+							// If it1 and it2 are equal, they should be in the same cluster
+							it2->_clusterID = it1->_clusterID;
 							if(it1->getAvgQual() >= it2->getAvgQual()){
 								it2->_duplicate = true;
 							} else {

@@ -26,6 +26,7 @@ private:
 protected:
 
 	void _printOut(uint64_t myNumReads, double t);
+	void _printClusters(uint64_t myNumReads, double t);
 
 	Options *_options;
 	SeqFileParser* _parser;

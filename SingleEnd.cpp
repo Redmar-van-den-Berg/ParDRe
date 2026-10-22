@@ -123,11 +123,6 @@ void SingleEnd::execute(){
 			} else {
 				cl = it->second;
 			}
-      // key is a long-int representation of the prefix
-      it->first;
-      fprintf(stderr, "%s %lu\n\r", iterSeq->_name, key);
-
-
       // Store the current sequence in the cluster matching the prefix
 			cl->includeSeq(iterSeq);
 		}
@@ -169,9 +164,33 @@ void SingleEnd::execute(){
 	Utils::log("Process %d/%d: Time to analyze %d reads with %d threads: %.2f seconds\n",
 			myRank, numP, myNumReads, _numTh, t);
 
+	// Now we print the cluster ID for each read name
+	_printClusters(myNumReads, t);
 	_printOut(myNumReads, t);
 }
+void SingleEnd::_printClusters(uint64_t myNumReads, double t){
+	// Print the information of the clusters
+	Cluster *cl;
+	Sequence *iterSeq;
 
+	int myRank, numP;
+	MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+	MPI_Comm_size(MPI_COMM_WORLD, &numP);
+
+	// Not all processes can print at the same time
+	for(int i=0; i<numP; i++){
+		if(myRank == i){
+			for(auto it = _clHashTable.begin(); it != _clHashTable.end(); it++){
+				cl = it->second;
+				for(int s=0; s<cl->numSeqs(); s++){
+					iterSeq = cl->getSeq(s);
+					fprintf(stdout, "%s %lu\n\r", iterSeq->_name, iterSeq->_clusterID);
+				}
+			}
+		MPI_Barrier(MPI_COMM_WORLD);
+		}
+	}
+}
 void SingleEnd::_printOut(uint64_t myNumReads, double t){
     // Print the information of the clusters
     uint64_t printReads = 0;

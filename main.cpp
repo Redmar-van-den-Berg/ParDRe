@@ -3,7 +3,6 @@
 #include "Options.h"
 
 int main(int argc, char* argv[]) {
-
 	// Initialize MPI
 	MPI_Init(&argc,&argv);
 
