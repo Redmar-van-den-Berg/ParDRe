@@ -123,7 +123,12 @@ void SingleEnd::execute(){
 			} else {
 				cl = it->second;
 			}
+      // key is a long-int representation of the prefix
+      it->first;
+      fprintf(stderr, "%s %lu\n\r", iterSeq->_name, key);
 
+
+      // Store the current sequence in the cluster matching the prefix
 			cl->includeSeq(iterSeq);
 		}
 
@@ -149,6 +154,7 @@ void SingleEnd::execute(){
     vector<thread> threads;
     it = _clHashTable.begin();
 
+    // For each thread, run _funcRemoveDup on the HashTable
     for(int i=0; i<_numTh; i++){
         threads.push_back(thread(_funcRemoveDup, &it, _clHashTable.end(),
         		&_mutex, _withLock, i));

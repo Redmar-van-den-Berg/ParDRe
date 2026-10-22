@@ -23,6 +23,7 @@ void Cluster::includeSeq(Sequence *seq){
 	_seqs.push_back(seq);
 }
 
+// Remove duplicates within a cluster
 void Cluster::removeDup(){
 
 	size_t numSeqs = _seqs.size();
@@ -31,6 +32,7 @@ void Cluster::removeDup(){
 
 	Sequence *firstSeq = _seqs[0];
 
+  // Find the distance to the first sequence
 	for(size_t i=1; i<numSeqs; i++){
 		iterMis = _dist(firstSeq, _seqs[i]);
 
