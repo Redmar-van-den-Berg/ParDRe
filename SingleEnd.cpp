@@ -123,7 +123,7 @@ void SingleEnd::execute(){
 			} else {
 				cl = it->second;
 			}
-      // Store the current sequence in the cluster matching the prefix
+			// Store the current sequence in the cluster matching the prefix
 			cl->includeSeq(iterSeq);
 		}
 
