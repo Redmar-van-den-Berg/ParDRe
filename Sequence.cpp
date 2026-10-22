@@ -42,6 +42,7 @@ Sequence::Sequence() {
 	_duplicate = false;
 	_opticalX = -1;
 	_opticalY = -1;
+	_clusterID = 0;
 }
 Sequence::Sequence(const Sequence & s) {
 	_length = s._length;

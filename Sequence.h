@@ -79,6 +79,7 @@ struct Sequence
 	int _opticalX;
 	int _opticalY;
 	bool _duplicate;
+	size_t _clusterID;
 
 	float _avgQual;
 };

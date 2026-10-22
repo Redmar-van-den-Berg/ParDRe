@@ -29,16 +29,22 @@ void Cluster::removeDup(){
 	size_t numSeqs = _seqs.size();
 	uint8_t *distTable = new uint8_t[numSeqs];
 	uint8_t iterMis;
+	// Keep track of the current cluster ID
+	size_t currentClusterId = 1;
 
 	Sequence *firstSeq = _seqs[0];
+	// The first sequence gets cluster ID 1
+	firstSeq -> _clusterID = 1;
 
-  // Find the distance to the first sequence
+	// Find the distance to the first sequence
 	for(size_t i=1; i<numSeqs; i++){
 		iterMis = _dist(firstSeq, _seqs[i]);
 
 		distTable[i] = iterMis;
 		if(iterMis <= _missMatch){
 			if(_equal(firstSeq, _seqs[i])){
+				// Any sequences equal to the first seq also get cluster ID 1
+				_seqs[i]->_clusterID = 1
 				if(firstSeq->getAvgQual() >= _seqs[i]->getAvgQual()){
 					_seqs[i]->_duplicate = true;
 				} else {
@@ -48,11 +54,16 @@ void Cluster::removeDup(){
 		}
 	}
 
+	currentClusterId+=1;
+
 	Sequence *it1, *it2;
 	uint8_t diff;
 
 	for(size_t i=1; i<numSeqs-1; i++){
 		it1 = _seqs[i];
+		// Note that it1 can NOT be a duplicate, but can still be in a cluster.
+		// This is because the duplicate flag depends on the quality of the read:
+		// only the lowest quality read in a comparison is marked as a duplicate.
 		if(!it1->_duplicate){
 			for(size_t j=i+1; j<numSeqs; j++){
 				it2 = _seqs[j];
@@ -64,6 +75,7 @@ void Cluster::removeDup(){
 					diff = abs(distTable[i]-distTable[j]);
 					if(diff<=_missMatch){
 						if(_equal(it1, it2)){
+						// If it1 and it2 are equal, they should be in the same cluster
 							if(it1->getAvgQual() >= it2->getAvgQual()){
 								it2->_duplicate = true;
 							} else {
