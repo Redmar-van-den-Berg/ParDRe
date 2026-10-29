@@ -10,7 +10,7 @@ EXEC = ParDRe
 
 #compile optionsK
 CXXFLAGS = -I . -pthread -std=c++11 -O3 -funroll-loops -ffast-math -Wall
-MYLIBS += -lm -lz -lstdc++
+MYLIBS += -lm -lz -lstdc++ -lmpi -lmpi_cxx
 CXX = mpicc
 
 all: dir $(objs)
