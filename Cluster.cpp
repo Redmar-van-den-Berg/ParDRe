@@ -23,20 +23,22 @@ void Cluster::includeSeq(Sequence *seq){
 	_seqs.push_back(seq);
 }
 
-// Remove duplicates within a cluster
-void Cluster::removeDup(){
+// Remove duplicates within a cluster.
+// Start numbering the clusters from clusterOffset
+void Cluster::removeDup(uint64_t clusterOffset){
 
 	size_t numSeqs = _seqs.size();
 	uint8_t *distTable = new uint8_t[numSeqs];
 	uint8_t iterMis;
 
 	// Keep track of the next cluster ID we will assign
-	size_t nextClusterID= 1;
+	size_t nextClusterID= clusterOffset+1;
 
+	// 	Utils::log("nextClusterID: %d\n", nextClusterID);
 
 	Sequence *firstSeq = _seqs[0];
 	// The first sequence gets cluster ID 1
-	firstSeq -> _clusterID = 1;
+	firstSeq -> _clusterID = nextClusterID;
 
 	// Find the distance to the first sequence
 	for(size_t i=1; i<numSeqs; i++){

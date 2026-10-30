@@ -18,7 +18,7 @@ public:
 
 	void includeSeq(Sequence *seq);
 
-	void removeDup();
+	void removeDup(uint64_t clusterOffset);
 
 	inline int numSeqs(){
 		return _seqs.size();

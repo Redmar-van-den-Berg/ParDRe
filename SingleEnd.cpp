@@ -67,7 +67,10 @@ uint32_t SingleEnd::_getSeqs(Sequence* seqs, int rank, int numP, uint8_t prefixL
 }
 
 void _funcRemoveDup(unordered_map<uint64_t, Cluster*>::iterator* it, unordered_map<uint64_t, Cluster*>::iterator end,
-		mutex *m, bool withLock, int id){
+		mutex *m, bool withLock, int id, uint64_t _blockSize){
+
+	// Keep track of which cluster we are on
+	uint64_t clusterNr=0;
 
 	Cluster* cl;
 
@@ -85,12 +88,14 @@ void _funcRemoveDup(unordered_map<uint64_t, Cluster*>::iterator* it, unordered_m
 
 		cl = (*it)->second;
 		(*it)++;
+    clusterNr++;
 
 		if(withLock){
 			m->unlock();
 		}
 
-		cl->removeDup();
+    // Ensure that concurrent runs cannot have overlapping cluster offsets
+		cl->removeDup(clusterNr*_blockSize);
 	}
 }
 
@@ -146,13 +151,14 @@ void SingleEnd::execute(){
 	Utils::log("Process %d/%d: finished the clustering of %lu reads in %.2f seconds\n",
 			myRank, numP, myNumReads, Utils::getSysTime()-stime);
 
+	Utils::log("Using %d threads\n", _numTh);
     vector<thread> threads;
     it = _clHashTable.begin();
 
     // For each thread, run _funcRemoveDup on the HashTable
     for(int i=0; i<_numTh; i++){
         threads.push_back(thread(_funcRemoveDup, &it, _clHashTable.end(),
-        		&_mutex, _withLock, i));
+        		&_mutex, _withLock, i, _blockSize));
     }
 
     for(int i=0; i<_numTh; i++){
