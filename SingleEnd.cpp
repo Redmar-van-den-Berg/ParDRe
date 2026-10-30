@@ -185,7 +185,7 @@ void SingleEnd::_printClusters(uint64_t myNumReads, double t){
 				for(int s=0; s<cl->numSeqs(); s++){
 					iterSeq = cl->getSeq(s);
 					string seq = iterSeq->getSequence();
-					fprintf(stdout, "%s %lu\n\r", iterSeq->getSequence().c_str(), iterSeq->_clusterID);
+					fprintf(stdout, "%s %lu\n", iterSeq->getSequence().c_str(), iterSeq->_clusterID);
 				}
 			}
 		MPI_Barrier(MPI_COMM_WORLD);
